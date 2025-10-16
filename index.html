@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="???????" name="description"/>
+<title>?</title>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+      * { box-sizing: border-box; }
+      body {
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+/Edge */
+        user-select: none; /* Standard syntax */
+      }
+      :root {
+        --text-color: #aaaaaa;
+        --accent-color: #666666;
+        --accent-light: rgba(150, 150, 150, 0.5);
+        --bg-color: #000000;
+        --card-bg: rgba(20, 20, 20, 0.85);
+        --card-border: rgba(100, 100, 100, 0.3);
+      }
+      body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Pixelify Sans', sans-serif;
+        background: var(--bg-color);
+        overflow: hidden;
+        height: 100%;
+        color: var(--text-color);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+      .enter-screen {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        transition: opacity 1s ease;
+      }
+      .enter-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .enter-button {
+        font-size: 24px;
+        padding: 20px 40px;
+        background: none;
+        color: var(--text-color);
+        border: 2px solid var(--accent-light);
+        cursor: pointer;
+        border-radius: 10px;
+        transition: all 0.5s ease;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        position: relative;
+        overflow: hidden;
+        font-family: 'Pixelify Sans', sans-serif;
+      }
+      .enter-button:hover, .enter-button:focus {
+        background: rgba(150, 150, 150, 0.2);
+        box-shadow: 0 0 20px var(--accent-light);
+        outline: none;
+      }
+      .enter-button:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 4px;
+      }
+      .enter-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: 0.5s;
+      }
+      .enter-button:hover::after, .enter-button:focus::after {
+        left: 100%;
+      }
+      .content {
+        display: none;
+        height: 100vh;
+        background-color: #000000;
+        color: var(--text-color);
+        flex-direction: column;
+        overflow: hidden;
+        position: relative;
+      }
+      .bg-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.8;
+        z-index: 0;
+      }
+      .content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1;
+      }
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        background: rgba(0, 0, 0, 0.8);
+      }
+      .title {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--text-color);
+        text-shadow: 0 0 10px var(--accent-color);
+        letter-spacing: 4px;
+        animation: pulse 2s infinite;
+      }
+      .controls {
+        display: flex;
+        gap: 20px;
+      }
+      .control-btn {
+        background: rgba(0, 0, 0, 0.6);
+        color: var(--text-color);
+        border: none;
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 16px;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        font-family: 'Pixelify Sans', sans-serif;
+      }
+      .control-btn:hover, .control-btn:focus {
+        background: rgba(100, 100, 100, 0.6);
+        box-shadow: 0 0 15px rgba(100, 100, 100, 0.5);
+        outline: none;
+      }
+      .control-btn:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+      }
+      .profiles-wrapper {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        height: 100%;
+        padding: 100px 60px 70px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+      .profiles-wrapper::-webkit-scrollbar {
+        height: 8px;
+      }
+      .profiles-wrapper::-webkit-scrollbar-thumb {
+        background: var(--accent-light);
+        border-radius: 4px;
+      }
+      .profiles-wrapper::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.2);
+      }
+      .profile-container {
+        text-align: center;
+        background-color: var(--card-bg);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 30px var(--card-border);
+        width: 320px;
+        flex-shrink: 0;
+        border-top: 2px solid var(--accent-color);
+        animation: glitch-border 1.5s infinite;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .profile-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(100, 100, 100, 0.1) 0%, transparent 100%);
+        z-index: -1;
+      }
+      .profile-container:hover, .profile-container:focus-within {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 40px rgba(100, 100, 100, 0.5);
+      }
+      .profile-img {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #444;
+        box-shadow: 0 0 20px rgba(100, 100, 100, 0.7);
+        margin-bottom: 20px;
+        border-top: 2px solid var(--accent-color);
+        animation: glitch-border 1.5s infinite;
+        pointer-events: none; /* NEUE CSS-REGEL */
+      }
+      .profile-img.loading {
+        background: #333;
+      }
+      .username,
+      .handle,
+      .invite,
+      .contact {
+        color: var(--text-color);
+        opacity: 0.9;
+        animation: glitch-text 1.5s infinite;
+        position: relative;
+        text-shadow: 1px 1px 2px #000;
+      }
+      .username {
+        font-size: 26px;
+        font-weight: bold;
+        margin-top: 15px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+      .handle {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: var(--accent-color);
+      }
+      .invite {
+        font-size: 16px;
+        margin-bottom: 20px;
+        padding: 5px;
+        background: rgba(100, 100, 100, 0.2);
+        border-radius: 5px;
+      }
+      .contact {
+        font-size: 16px;
+        margin-top: 20px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 5px;
+      }
+      .contact i {
+        display: block;
+        margin: 8px 0;
+        font-style: normal;
+        transition: color 0.3s ease;
+      }
+      .contact i:hover {
+        color: var(--accent-color);
+      }
+      .social-icons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        gap: 30px;
+      }
+      .icon-wrapper {
+        position: relative;
+      }
+      .icon {
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        animation: pulse 2s infinite;
+        filter: drop-shadow(0 0 6px var(--accent-color));
+        transition: transform 0.3s ease;
+      }
+      .icon:hover, .social-link:focus .icon {
+        transform: scale(1.2);
+      }
+      .tooltip {
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: var(--text-color);
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        pointer-events: none;
+        white-space: nowrap;
+        box-shadow: 0 0 6px var(--accent-color);
+      }
+      .icon-wrapper:hover .tooltip, .social-link:focus .tooltip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-5px);
+      }
+      .social-link:focus {
+        outline: none;
+      }
+      .social-link:focus-visible {
+        outline: 2px solid var(--accent-color);
+        border-radius: 50%;
+        outline-offset: 2px;
+      }
+      .nav-arrows {
+        position: fixed;
+        width: 100%;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 100;
+        pointer-events: none;
+      }
+      .arrow {
+        font-size: 40px;
+        color: rgba(170, 170, 170, 0.7);
+        background: rgba(0, 0, 0, 0.5);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.3s ease;
+      }
+      .arrow:hover, .arrow:focus {
+        background: rgba(100, 100, 100, 0.7);
+        color: white;
+        transform: scale(1.1);
+        outline: none;
+      }
+      .arrow:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+      }
+      .footer {
+        position: fixed;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        background: transparent;
+        color: var(--text-color);
+        text-align: center;
+        padding: 10px 0;
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+   
+      @keyframes glitch-border {
+        0%, 100% {
+          border-top-color: var(--accent-color);
+          box-shadow: 0 0 10px var(--accent-color);
+        }
+        50% {
+          border-top-color: #999;
+          box-shadow: 0 0 20px #999;
+        }
+      }
+      @keyframes glitch-text {
+        0%, 100% {
+          text-shadow:
+            1px 0 red,
+            -1px 0 cyan;
+        }
+        50% {
+          text-shadow:
+            -1px 0 red,
+            1px 0 cyan;
+        }
+      }
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+          text-shadow: 0 0 10px var(--accent-color);
+        }
+        50% {
+          opacity: 0.7;
+          text-shadow: 0 0 5px var(--accent-light);
+        }
+      }
+     
+      body.light-theme {
+        --text-color: #555555;
+        --accent-color: #8b0000;
+        --accent-light: rgba(139, 0, 0, 0.5);
+        --bg-color: #f0f0f0;
+        --card-bg: rgba(255, 255, 255, 0.8);
+        --card-border: rgba(139, 0, 0, 0.3);
+      }
+      body.light-theme .content::before {
+        background: rgba(255, 255, 255, 0.4);
+      }
+      body.light-theme .header {
+        background: rgba(255, 255, 255, 0.8);
+      }
+      body.light-theme .control-btn {
+        background: rgba(255, 255, 255, 0.6);
+      }
+      body.light-theme .footer {
+        background: rgba(255, 255, 255, 0.8);
+      }
+      /* Media Queries */
+      @media (max-width: 768px) {
+        .profiles-wrapper {
+          padding: 100px 10px 70px;
+          gap: 20px;
+          align-items: flex-start;
+          padding-bottom: 100px;
+        }
+        .profile-container {
+          width: 320px;
+          padding: 20px;
+        }
+        .profile-img {
+          width: 120px;
+          height: 120px;
+        }
+        .username {
+          font-size: 22px;
+        }
+        .handle, .invite {
+          font-size: 16px;
+        }
+        .nav-arrows {
+          padding: 0 10px;
+        }
+        .arrow {
+          width: 45px;
+          height: 45px;
+          font-size: 30px;
+        }
+        .header {
+          flex-direction: column;
+          gap: 10px;
+          padding: 10px;
+        }
+        .controls {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+      @media (max-width: 480px) {
+        .title {
+          font-size: 22px;
+        }
+        .profile-container {
+          /* Angepasste Breite für bessere Darstellung auf kleinen Bildschirmen wie iPhone 15 */
+          width: 90%; /* Nimmt 90% der verfügbaren Breite ein */
+          max-width: 320px; /* Maximale Breite bleibt 320px, falls 90% größer wäre */
+          margin: 0 auto; /* Zentriert den Container */
+        }
+        .controls {
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .control-btn {
+          font-size: 14px;
+          padding: 6px 10px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+</head>
+<body>
+<a class="sr-only" href="#content">Skip to main content</a>
+<div aria-labelledby="enterTitle" class="enter-screen" id="enterScreen" role="dialog">
+<h1 class="sr-only" id="enterTitle">?????</h1>
+<div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+<button aria-label="Enter Network" class="enter-button" id="enterBtn">ENTER NETWORK</button>
+</div>
+</div>
+<div class="content" id="content" role="main">
+<img alt="Background animation" aria-hidden="true" class="bg-image" id="bgImage" loading="lazy" src="https://files.catbox.moe/uunx15.gif"/>
+<div class="header">
+<div class="title"> - Made by ffkyo - </div>
+<div class="controls">
+<button aria-label="Toggle audio" class="control-btn" id="muteBtn">🔊</button>
+<button aria-label="Toggle fullscreen" class="control-btn" id="fullscreenBtn">⛶ FULLSCREEN</button>
+</div>
+</div>
+<div aria-label="Member profiles gallery" class="profiles-wrapper" id="profilesWrapper" tabindex="0">
+<div aria-label="Profile: high" class="profile-container" tabindex="0">
+<img alt="high" class="profile-img" draggable="false" src="https://files.catbox.moe/hmda8q.webp"/>
+<div class="username">Gab</div>
+<div class="handle"></div>
+<div class="invite bio-text"></div><div class="bio-text"></div>
+<div class="contact">
+<i>discord @gabriel_.2609</i>
+<i>tg @Doxmyshii</i>
+</div>
+
+</div>
+<div aria-label="Profile: culti" class="profile-container" tabindex="0">
+<img alt="culti" class="profile-img loading" draggable="false" loading="lazy" onload="this.classList.remove('loading')" src="https://files.catbox.moe/gfkden.jpg"/>
+
+<div class="username-centered">
+  <div class="username">kyo</div>
+</div>
+<div class="small-owner">OWNER</div> <div aria-label="Role" class="handle"></div>
+<div aria-label="Alias" class="invite bio-text"></div><div class="bio-text"></div>
+<div aria-label="Contact information" class="contact">
+<i>discord = ffkyo</i>
+<i>TT = ffkyo00</i>
+</div>
+
+</div>
+<div class="profile-container">
+<img alt="wem" class="profile-img" draggable="false" src="https://files.catbox.moe/eg109f.webp"/>
+<div class="username">Lua</div>
+<div class="handle"></div>
+<div class="invite bio-text"></div><div class="bio-text"></div>
+<div class="contact">
+<i>discord @_xeanz_</i>
+<i>tg @igotissues</i>
+<i></i>
+</div>
+
+</div>
+</div>
+<div class="footer">
+          © 2025• All Rights Reserved. Entertaintment purposes only.
+        </div>
+</div>
+<audio id="bgMusic" loop="">
+<source src="https://files.catbox.moe/81uaan.mp3" type="audio/mpeg"/>
+        Your browser does not support the audio element.
+      </audio>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Disable right-click
+          document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+          });
+
+          const enterScreen = document.getElementById("enterScreen");
+          const enterBtn = document.getElementById("enterBtn");
+          const content = document.getElementById("content");
+          const bgMusic = document.getElementById("bgMusic");
+          const muteBtn = document.getElementById("muteBtn");
+          const fullscreenBtn = document.getElementById("fullscreenBtn");
+          const profilesWrapper = document.getElementById("profilesWrapper");
+          const prevBtn = document.getElementById("prevBtn");
+          const nextBtn = document.getElementById("nextBtn");
+          const profileContainers = document.querySelectorAll(".profile-container");
+          const profileImages = document.querySelectorAll(".profile-img"); // NEUE ZEILE
+
+          // NEUE FUNKTION ZUR VERMEIDUNG DES DRAG-EFFEKTS
+          profileImages.forEach(img => {
+            img.addEventListener('dragstart', (e) => {
+              e.preventDefault();
+            });
+          });
+         
+          const scrollDistance = 360; 
+
+          
+          function enterSite() {
+            console.log("Enter button clicked");
+            enterScreen.classList.add("hidden");
+            setTimeout(() => {
+              enterScreen.style.display = "none";
+              content.style.display = "flex";
+
+              // Animations for profiles
+              profileContainers.forEach((profile, index) => {
+                profile.style.opacity = "0";
+                profile.style.transform = "translateY(50px)";
+
+                setTimeout(() => {
+                  profile.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                  profile.style.opacity = "1";
+                  profile.style.transform = "translateY(0)";
+                }, 100 * index);
+              });
+            }, 1000);
+
+            
+            bgMusic.volume = 0.4;
+            bgMusic.play().catch(err => console.error("Audio playback failed:", err));
+          }
+
+          
+          enterBtn.addEventListener("click", enterSite);
+          enterScreen.addEventListener("click", function(e) {
+            
+            if (e.target === enterScreen) {
+              enterSite();
+            }
+          });
+
+          
+          muteBtn.addEventListener("click", function() {
+            bgMusic.muted = !bgMusic.muted;
+            muteBtn.textContent = bgMusic.muted ? "🔇 MUTED" : "🔊 AUDIO";
+          });
+
+         
+          fullscreenBtn.addEventListener("click", function() {
+            if (!document.fullscreenElement) {
+              document.documentElement.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable fullscreen: ${err.message}`);
+              });
+              fullscreenBtn.textContent = "⛶ EXIT";
+            } else {
+              if (document.exitFullscreen) {
+                document.exitFullscreen();
+                fullscreenBtn.textContent = "⛶ FULLSCREEN";
+              }
+            }
+          });
+
+          // Navigation for profilesWrapper (if you decide to add prev/next buttons)
+          // nextBtn.addEventListener("click", function() {
+          //   profilesWrapper.scrollBy({ left: scrollDistance, behavior: 'smooth' });
+          // });
+
+          // prevBtn.addEventListener("click", function() {
+          //   profilesWrapper.scrollBy({ left: -scrollDistance, behavior: 'smooth' });
+          // });
+
+          
+          document.addEventListener("keydown", function(e) {
+            if (e.key === "ArrowRight") {
+              profilesWrapper.scrollBy({ left: scrollDistance, behavior: 'smooth' });
+            } else if (e.key === "ArrowLeft") {
+              profilesWrapper.scrollBy({ left: -scrollDistance, behavior: 'smooth' });
+            }
+          });
+
+          
+          let touchstartX = 0;
+          let touchendX = 0;
+
+          profilesWrapper.addEventListener('touchstart', function(e) {
+            touchstartX = e.changedTouches[0].screenX;
+          });
+
+          profilesWrapper.addEventListener('touchend', function(e) {
+            touchendX = e.changedTouches[0].screenX;
+            handleSwipe();
+          });
+
+          function handleSwipe() {
+            if (touchendX < touchstartX - 50) {
+              profilesWrapper.scrollBy({ left: scrollDistance, behavior: 'smooth' });
+            }
+            if (touchendX > touchstartX + 50) {
+              profilesWrapper.scrollBy({ left: -scrollDistance, behavior: 'smooth' });
+            }
+          }
+
+          
+          profilesWrapper.addEventListener('scroll', function() {
+            const scrollLeft = profilesWrapper.scrollLeft;
+            const maxScroll = profilesWrapper.scrollWidth - profilesWrapper.clientWidth;
+
+            // Optional: Fade arrows based on scroll position
+            // prevBtn.style.opacity = scrollLeft <= 10 ? "0.3" : "1";
+            // nextBtn.style.opacity = scrollLeft >= maxScroll - 10 ? "0.3" : "1";
+          });
+        });
+      </script>
+<script>
+    const bioTexts = [
+        "-ONE DAY-",
+        "Сила в правде",
+        "Не суди по одежке",
+        "Discord = ffkyo",
+    ];
+
+    let currentIndex = 0;
+
+    function typeWriter(text, i, callback) {
+        const bioElements = document.querySelectorAll(".invite.bio-text");
+        if (i < text.length) {
+            bioElements.forEach(el => el.innerHTML = text.substring(0, i + 1));
+            setTimeout(() => typeWriter(text, i + 1, callback), 50);
+        } else {
+            setTimeout(callback, 1500);
+        }
+    }
+
+    function deleteWriter(text, i, callback) {
+        const bioElements = document.querySelectorAll(".invite.bio-text");
+        if (i >= 0) {
+            bioElements.forEach(el => el.innerHTML = text.substring(0, i));
+            setTimeout(() => deleteWriter(text, i - 1, callback), 50);
+        } else {
+            setTimeout(callback, 300);
+        }
+    }
+
+    function startTypingCycle() {
+        const text = bioTexts[currentIndex];
+        typeWriter(text, 0, () => {
+            deleteWriter(text, text.length, () => {
+                currentIndex = (currentIndex + 1) % bioTexts.length;
+                startTypingCycle();
+            });
+        });
+    }
+
+    window.addEventListener("load", () => {
+        startTypingCycle();
+    });
+</script>
+<style>
+.invite.bio-text {
+    font-size: 16px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 5px;
+    color: var(--accent-color);
+    min-height: 28px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    margin: 20px auto;
+}
+</style>
+<style>
+.badge {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 18px;
+    cursor: default;
+    filter: grayscale(1);
+    transition: filter 0.3s ease;
+}
+.badge:hover {
+    filter: grayscale(0);
+}
+
+.badge-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.badge-tooltip {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: var(--text-color);
+  text-transform: uppercase;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  box-shadow: 0 0 6px var(--accent-color);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 999;
+}
+
+.badge-wrapper:hover .badge-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+
+.username-centered {
+  display: flex;
+  flex-direction: column; /* Changed to column to stack the elements */
+  align-items: center; /* Horizontally align items in the center */
+  justify-content: center;
+}
+
+/* Removed badge-icon as it contained the crown SVG */
+
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: var(--text-color);
+  text-transform: uppercase;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  box-shadow: 0 0 6px var(--accent-color);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 999;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* Removed crown-svg styles as the SVG itself is removed */
+
+
+.username {
+  font-size: 26px; 
+  font-weight: bold;
+  margin-top: 0; /* No top margin needed when stacked */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.small-owner {
+    font-size: 12px; /* Smaller font size */
+    color: var(--accent-color); /* A subtle color */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 5px; /* Space between username and OWNER text */
+    text-align: center; /* Ensure it's centered */
+    width: 100%; /* Take full width to ensure centering works */
+}
+</style>
+</body>
+</html>
